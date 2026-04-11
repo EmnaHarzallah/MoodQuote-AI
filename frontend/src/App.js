@@ -1,10 +1,12 @@
 import { useState } from "react";
+import "./App.css";
 
 function App() {
   const [text, setText] = useState("");
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const emotionColors = {
+  const emotionStyles = {
     joy: "#FFD93D",
     sadness: "#4D96FF",
     anger: "#FF6B6B",
@@ -15,55 +17,45 @@ function App() {
   };
 
   const analyze = async () => {
+    setLoading(true);
+
     const res = await fetch("http://127.0.0.1:5000/analyze", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ text }),
     });
 
     const data = await res.json();
     setResult(data);
+    setLoading(false);
   };
 
-  const bgColor = result ? emotionColors[result.emotion] : "#ffffff";
-  const saveQuote = () => {
-    let saved = JSON.parse(localStorage.getItem("quotes") || "[]");
+  const bgColor = result ? emotionStyles[result.emotion] : "#1e1e2f";
 
-    saved.push(result);
-
-    localStorage.setItem("quotes", JSON.stringify(saved));
-  };
-  const saved = JSON.parse(localStorage.getItem("quotes") || "[]");
-  console.log(saved);
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        padding: "40px",
-        background: bgColor,
-        transition: "0.5s",
-      }}
-    >
-      <h1>Emotion Quote AI 💬</h1>
+    <div className="app" style={{ background: bgColor }}>
+      <div className="card">
+        <h1>Emotion AI 💬</h1>
 
-      <textarea
-        rows="4"
-        style={{ width: "300px" }}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="How are you feeling?"
-      />
+        <textarea
+          placeholder="How are you feeling?"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
 
-      <br />
+        <button onClick={analyze} disabled={loading}>
+          {loading ? "Analyzing..." : "Analyze Emotion"}
+        </button>
 
-      <button onClick={analyze}>Analyze Emotion</button>
-
-      {result && (
-        <div style={{ marginTop: "30px" }}>
-          <h3>"{result.quote}"</h3>
-          <p>- {result.author}</p>
-        </div>
-      )}
+        {result && (
+          <div className="result">
+            <p className="quote">"{result.quote}"</p>
+            <p className="author">- {result.author}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
