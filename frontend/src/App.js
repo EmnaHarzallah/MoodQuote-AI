@@ -60,10 +60,8 @@ function App() {
 
       {result && (
         <div style={{ marginTop: "30px" }}>
-          <h2>Emotion: {result.emotion}</h2>
           <h3>"{result.quote}"</h3>
           <p>- {result.author}</p>
-          <button onClick={saveQuote}>Save Quote</button>
         </div>
       )}
     </div>

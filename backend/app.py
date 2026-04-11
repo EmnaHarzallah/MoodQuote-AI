@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from transformers import pipeline
 import requests
+import urllib3
+
 
 app = Flask(__name__)
 CORS(app)
@@ -35,9 +37,11 @@ def analyze():
 
     # Get quote from internet
     tags = emotion_to_tags.get(emotion, "inspirational")
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     response = requests.get(
-        f"https://api.quotable.io/random?tags={tags}"
+        f"https://api.quotable.io/random?tags={tags}" , 
+        verify = False
     )
 
     quote_data = response.json()
